@@ -28,6 +28,21 @@ ns.data = {
         recentlyOutput = false,
         timerActive = false,
     },
+    classColors = {
+        deathknight = "c41e3a",
+        demonhunter = "a330c9",
+        druid = "ff7c0a",
+        evoker = "33937f",
+        hunter = "aad372",
+        mage = "3fc7eb",
+        monk = "00ff98",
+        paladin = "f48cba",
+        priest = "ffffff",
+        rogue = "fff468",
+        shaman = "0070dd",
+        warlock = "8788ee",
+        warrior = "c69b6d",
+    },
     questID = 81763, -- Defeat of Beledar's Spawn
     mountID = 2192, -- Beledar's Spawn
 }

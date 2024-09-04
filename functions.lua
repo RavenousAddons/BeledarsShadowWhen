@@ -1,7 +1,8 @@
 local ADDON_NAME, ns = ...
 local L = ns.L
 
-local character = UnitName("player") .. "-" .. GetRealmName("player")
+local _, className, _ = UnitClass("player")
+local characterFormatted = "|cff" .. ns.data.classColors[className:lower()] .. UnitName("player") .. "-" .. GetRealmName("player") .. "|r"
 
 local CT = C_Timer
 local CQL = C_QuestLog
@@ -68,10 +69,10 @@ local function TimerPrint(message, raidWarningGate)
     if raidWarningGate and ns:GetOptionValue("raidwarning") then
         RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
     end
-    local defeatString = "|cff" .. (CQL.IsQuestFlaggedCompleted(ns.data.questID) and "ff4444have already" or "44ff44have not") .. "|r"
     local mountLearned = select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
     if not mountLearned then
-        DEFAULT_CHAT_FRAME:AddMessage(L.DefeatCheck:format(defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r", character))
+        local defeatString = "|cff" .. (CQL.IsQuestFlaggedCompleted(ns.data.questID) and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
+        DEFAULT_CHAT_FRAME:AddMessage(L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r"))
     end
 end
 
