@@ -1,0 +1,16 @@
+## Interface: 110002
+## Version: 1.0.0
+
+## Name: Beledar's Shadow When?
+## Title: Beledar's Shadow When?
+## Notes: Keep track of when Beledar's Shadow begins in Hallowfall|n|n|cffbbbbbbSlash command: /bsw|r
+## Author: RavenousAddons
+## IconAtlas: UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare
+
+## SavedVariables: BSW_version
+## SavedVariablesPerCharacter: BSW_options
+
+## X-License: Public Domain
+## X-Website: https://github.com/RavenousAddons/BeledarsShadowWhen
+
+BeledarsShadowWhen.xml
