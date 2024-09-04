@@ -29,5 +29,12 @@ function ns:CreateSettingsPanel()
         CreateCheckBox(category, option.key, option.name, option.tooltip)
     end
 
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L.OptionsTitle3))
+
+    for index = 1, #L.OptionsExtra do
+        local option = L.OptionsExtra[index]
+        CreateCheckBox(category, option.key, option.name, option.tooltip)
+    end
+
     ns.Settings = category
 end

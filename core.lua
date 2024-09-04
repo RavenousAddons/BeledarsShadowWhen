@@ -32,13 +32,18 @@ AddonCompartmentFrame:RegisterAddon({
     registerForAnyClick = true,
     notCheckable = true,
     func = function(button, menuInputData, menu)
-        ns:OpenSettings()
+        local mouseButton = menuInputData.buttonName
+        if mouseButton == "RightButton" then
+            ns:OpenSettings()
+        end
+        ns:TimeCheck()
     end,
     funcOnEnter = function(menuItem)
         GameTooltip:SetOwner(menuItem)
         GameTooltip:SetText(ns.name .. "        v" .. ns.version)
         GameTooltip:AddLine(" ", 1, 1, 1, true)
-        GameTooltip:AddLine(L.AddonCompartmentTooltip, 1, 1, 1, true)
+        GameTooltip:AddLine(L.AddonCompartmentTooltip1, 1, 1, 1, true)
+        GameTooltip:AddLine(L.AddonCompartmentTooltip2, 1, 1, 1, true)
         GameTooltip:Show()
     end,
     funcOnLeave = function()

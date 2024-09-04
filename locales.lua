@@ -23,9 +23,9 @@ L.AlertFuture = "starts in Hallowfall in %s from %s until %s."
 L.AlertPresent = "has started in Hallowfall and will last %s until %s!"
 L.AlertEnd = " has ended! 2h 30m until the next one."
 L.DefeatCheck = "%s %s %s today."
-L.AddonCompartmentTooltip = "|cff" .. ns.color .. "Open Settings"
+L.AddonCompartmentTooltip1 = "|cff" .. ns.color .. "Left-Click:|r Check Timer"
+L.AddonCompartmentTooltip2 = "|cff" .. ns.color .. "Right-Click:|r Open Settings"
 L.OptionsTitle1 = "When do you want to be alerted?"
-L.OptionsTitle2 = "How do you want to be alerted?"
 L.OptionsWhenTooltip = "Sets up an alert %s the next " .. L.BeledarsShadow .. "." -- string
 L.OptionsWhen = {
     [1] = {
@@ -59,6 +59,7 @@ L.OptionsWhen = {
         tooltip = L.OptionsWhenTooltip:format("30 minutes before"),
     },
 }
+L.OptionsTitle2 = "How do you want to be alerted?"
 L.OptionsHowTooltip = "When important alerts go off, they will be accompanied by a %s, in addition to the chat box alert."
 L.OptionsHow = {
     [1] = {
@@ -70,6 +71,14 @@ L.OptionsHow = {
         key = "raidwarning",
         name = "Raid Warnings",
         tooltip = L.OptionsHowTooltip:format("Raid Warning"),
+    },
+}
+L.OptionsTitle3 = "Extra Options:"
+L.OptionsExtra = {
+    [1] = {
+        key = "alwaysTrackQuest",
+        name = "Always display defeat status",
+        tooltip = "Always display whether your character has killed Beledar's Spawn yet today, even if you have already collected the mount.",
     },
 }
 

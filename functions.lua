@@ -25,7 +25,7 @@ end
 local function Toggle(toggle, timeout)
     if not ns.data.toggles[toggle] then
         ns.data.toggles[toggle] = true
-        CT.After(timeout, function()
+        CT.After(math.max(timeout, 0), function()
             ns.data.toggles[toggle] = false
         end)
     end
@@ -70,13 +70,18 @@ local function TimerPrint(message, raidWarningGate)
         RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
     end
     local mountLearned = select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
-    if not mountLearned then
+    if not mountLearned or ns:GetOptionValue("alwaysTrackQuest") then
         local defeatString = "|cff" .. (CQL.IsQuestFlaggedCompleted(ns.data.questID) and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
         DEFAULT_CHAT_FRAME:AddMessage(L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r"))
     end
 end
 
 local function SetTimers(seconds, startTime, endTime)
+    print("SetTimers " .. seconds)
+    -- Fix end/start discrepancy
+    if seconds < 1 then
+        seconds = 10800
+    end
     -- Prevent duplicate timers
     Toggle("timerActive", seconds - 1)
 
@@ -93,7 +98,7 @@ local function SetTimers(seconds, startTime, endTime)
 
     -- Set Pre-Defined Alerts (X mins before end)
     for option, minutes in pairs(ns.data.timers) do
-        if seconds >= (minutes * 60) then
+        if seconds > (minutes * 60) then
             CT.After(seconds - (minutes * 60), function()
                 if ns:GetOptionValue(option) then
                     Toggle("recentlyOutput", ns.data.timeout)
@@ -106,13 +111,13 @@ local function SetTimers(seconds, startTime, endTime)
 
     -- Set Start Alert (at end)
     CT.After(seconds, function()
+        Toggle("recentlyOutput", ns.data.timeout)
         if ns:GetOptionValue("alertStart") then
-            Toggle("recentlyOutput", ns.data.timeout)
             TimerPrint(L.AlertPresent:format(startTime, endTime), true)
             PlaySound(ns.data.sounds.present)
         end
         -- And restart timers
-        CT.After(1, function()
+        CT.After(3, function()
             ns:TimerCheck()
         end)
     end)
@@ -152,6 +157,7 @@ function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
     local seconds = (GetQuestResetTime() + 3660) % 10800
+    print("TimerCheck " .. seconds)
     local dateFormat = GetCVar("timeMgrUseMilitaryTime") == "1" and "%H:%M:%S" or "%I:%M:%S%p"
     local startTime = date(dateFormat, now + seconds)
     local endTime = date(dateFormat, seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
