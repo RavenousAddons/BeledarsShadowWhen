@@ -1,7 +1,10 @@
 local ADDON_NAME, ns = ...
 local L = ns.L
 
+local character = UnitName("player") .. "-" .. GetRealmName("player")
+
 local CT = C_Timer
+local CQL = C_QuestLog
 
 ---
 -- Local Functions
@@ -12,6 +15,32 @@ local CT = C_Timer
 local function PlaySound(id)
     if ns:GetOptionValue("sound") then
         PlaySoundFile(id)
+    end
+end
+
+--- Toggles a feature with a specified timeout
+-- @param {string} toggle
+-- @param {number} timeout
+local function Toggle(toggle, timeout)
+    if not ns.data.toggles[toggle] then
+        ns.data.toggles[toggle] = true
+        CT.After(timeout, function()
+            ns.data.toggles[toggle] = false
+        end)
+    end
+end
+
+-- Set default values for options which are not yet set.
+-- @param {string} option
+-- @param {any} default
+local function RegisterDefaultOption(option, default)
+    if BSW_options[ns.prefix .. option] == nil then
+        if BSW_options[option] ~= nil then
+            BSW_options[ns.prefix .. option] = BSW_options[option]
+            BSW_options[option] = nil
+        else
+            BSW_options[ns.prefix .. option] = default
+        end
     end
 end
 
@@ -31,30 +60,31 @@ local function Duration(duration)
     return string.format("%02d seconds", seconds)
 end
 
--- Set default values for options which are not yet set.
--- @param {string} option
--- @param {any} default
-local function RegisterDefaultOption(option, default)
-    if BSW_options[ns.prefix .. option] == nil then
-        if BSW_options[option] ~= nil then
-            BSW_options[ns.prefix .. option] = BSW_options[option]
-            BSW_options[option] = nil
-        else
-            BSW_options[ns.prefix .. option] = default
-        end
+--- Prints a message about the current timer
+-- @param {string} message
+-- @param {boolean} raidWarning
+local function TimerPrint(message, raidWarningGate)
+    DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
+    if raidWarningGate and ns:GetOptionValue("raidwarning") then
+        RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
+    end
+    local defeatString = "|cff" .. (CQL.IsQuestFlaggedCompleted(ns.data.questID) and "ff4444have already" or "44ff44have not") .. "|r"
+    local mountLearned = select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
+    if not mountLearned then
+        DEFAULT_CHAT_FRAME:AddMessage(L.DefeatCheck:format(defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r", character))
     end
 end
 
 local function SetTimers(seconds, startTime, endTime)
     -- Prevent duplicate timers
-    ns:Toggle("timerActive", seconds - 1)
+    Toggle("timerActive", seconds - 1)
 
     -- Set End Alert (30 mins after start)
     if seconds > 9000 then
         CT.After(seconds - 9000, function()
             if ns:GetOptionValue("alertEnd") then
-                ns:Toggle("recentlyOutput", ns.data.timeouts.short)
-                ns:TimerPrint(L.AlertEnd, true)
+                Toggle("recentlyOutput", ns.data.timeout)
+                TimerPrint(L.AlertEnd, true)
                 PlaySound(ns.data.sounds.future)
             end
         end)
@@ -65,8 +95,8 @@ local function SetTimers(seconds, startTime, endTime)
         if seconds >= (minutes * 60) then
             CT.After(seconds - (minutes * 60), function()
                 if ns:GetOptionValue(option) then
-                    ns:Toggle("recentlyOutput", ns.data.timeouts.short)
-                    ns:TimerPrint(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), true)
+                    Toggle("recentlyOutput", ns.data.timeout)
+                    TimerPrint(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), true)
                     PlaySound(ns.data.sounds.future)
                 end
             end)
@@ -76,8 +106,8 @@ local function SetTimers(seconds, startTime, endTime)
     -- Set Start Alert (at end)
     CT.After(seconds, function()
         if ns:GetOptionValue("alertStart") then
-            ns:Toggle("recentlyOutput", ns.data.timeouts.short)
-            ns:TimerPrint(L.AlertPresent:format(startTime, endTime), true)
+            Toggle("recentlyOutput", ns.data.timeout)
+            TimerPrint(L.AlertPresent:format(startTime, endTime), true)
             PlaySound(ns.data.sounds.present)
         end
         -- And restart timers
@@ -110,58 +140,17 @@ function ns:PrettyPrint(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. ns.name .. "|r " .. message)
 end
 
---- Checks if an element is in a table
--- @param {table} table
--- @param {string} input
--- @return {number|boolean}
-function ns:Contains(table, input)
-    for index, value in ipairs(table) do
-        if value == input then
-            return index
-        end
-    end
-    return false
-end
-
---- Toggles a feature with a specified timeout
--- @param {string} toggle
--- @param {number} timeout
-function ns:Toggle(toggle, timeout)
-    if not ns.data.toggles[toggle] then
-        ns.data.toggles[toggle] = true
-        CT.After(timeout, function()
-            ns.data.toggles[toggle] = false
-        end)
-    end
-end
-
 --- Opens the Addon settings menu and plays a sound
 function ns:OpenSettings()
     PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
     Settings.OpenToCategory(ns.Settings:GetID())
 end
 
---- Prints a message about the current timer
--- @param {string} message
--- @param {boolean} raidWarning
-function ns:TimerPrint(message, raidWarningGate)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. L.BeledarsShadow .. " |r" .. message)
-    if raidWarningGate and ns:GetOptionValue("raidwarning") then
-        RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
-    end
-end
-
---- Get seconds until next Beledar's Shadow
--- @return {number}
-function ns:GetSeconds()
-    return (GetQuestResetTime() + 3660) % 10800
-end
-
 --- Checks the timer's state
 function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
-    local seconds = ns:GetSeconds()
+    local seconds = (GetQuestResetTime() + 3660) % 10800
     local dateFormat = GetCVar("timeMgrUseMilitaryTime") == "1" and "%H:%M:%S" or "%I:%M:%S%p"
     local startTime = date(dateFormat, now + seconds)
     local endTime = date(dateFormat, seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
@@ -172,14 +161,14 @@ function ns:TimerCheck(forced)
     end
 
     if forced or not ns.data.toggles.recentlyOutput then
-        ns:Toggle("recentlyOutput", ns.data.timeouts.short)
+        Toggle("recentlyOutput", ns.data.timeout)
         if seconds >= 9000 then
             -- Active now (10799 - 9000)
-            ns:TimerPrint(L.AlertPresent:format(Duration(seconds - 9000), endTime), true)
+            TimerPrint(L.AlertPresent:format(Duration(seconds - 9000), endTime), true)
             PlaySound(ns.data.sounds.present)
         else
             -- Upcoming (8999 - 0)
-            ns:TimerPrint(L.AlertFuture:format(Duration(seconds), startTime, endTime), true)
+            TimerPrint(L.AlertFuture:format(Duration(seconds), startTime, endTime), true)
             PlaySound(ns.data.sounds.future)
         end
     end

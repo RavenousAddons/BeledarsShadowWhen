@@ -12,6 +12,7 @@ end })
 L.Enabled = _G.VIDEO_OPTIONS_ENABLED
 L.Disabled = _G.VIDEO_OPTIONS_DISABLED
 L.BeledarsShadow = "Beledar's Shadow"
+L.BeledarsSpawn = "Beledar's Spawn"
 
 -- English
 L.Version = "%s is the current version." -- ns.version
@@ -21,6 +22,7 @@ L.Help = "TODO"
 L.AlertFuture = "starts in Hallowfall in %s from %s until %s."
 L.AlertPresent = "has started in Hallowfall and will last %s until %s!"
 L.AlertEnd = " has ended! 2h 30m until the next one."
+L.DefeatCheck = "You %s defeated %s on %s today."
 L.AddonCompartmentTooltip = "|cff" .. ns.color .. "Open Settings"
 L.OptionsTitle1 = "When do you want to be alerted?"
 L.OptionsTitle2 = "How do you want to be alerted?"

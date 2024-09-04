@@ -23,7 +23,6 @@ function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
         end
         BSW_version = ns.version
         ns:TimerCheck()
-        C_ChatInfo.RegisterAddonMessagePrefix(ADDON_NAME)
     end
 end
 
