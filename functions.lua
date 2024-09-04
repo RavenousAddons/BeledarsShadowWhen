@@ -50,7 +50,7 @@ local function SetTimers(seconds, startTime, endTime)
     ns:Toggle("timerActive", seconds - 1)
 
     -- Set End Alert (30 mins after start)
-    if seconds >= 9000 then
+    if seconds > 9000 then
         CT.After(seconds - 9000, function()
             if ns:GetOptionValue("alertEnd") then
                 ns:Toggle("recentlyOutput", ns.data.timeouts.short)
@@ -81,7 +81,9 @@ local function SetTimers(seconds, startTime, endTime)
             PlaySound(ns.data.sounds.present)
         end
         -- And restart timers
-        ns:TimerCheck()
+        CT.After(1, function()
+            ns:TimerCheck()
+        end)
     end)
 end
 

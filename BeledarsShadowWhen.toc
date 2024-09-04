@@ -1,5 +1,5 @@
 ## Interface: 110002
-## Version: 1.0.0
+## Version: 1.0.1
 
 ## Name: Beledar's Shadow When?
 ## Title: Beledar's Shadow When?
