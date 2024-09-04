@@ -23,6 +23,7 @@ L.AlertFuture = "starts in Hallowfall in %s from %s until %s."
 L.AlertPresent = "has started in Hallowfall and will last %s until %s!"
 L.AlertEnd = " has ended! 2h 30m until the next event."
 L.DefeatCheck = "%s %s %s today."
+L.QuestCompleteAlertDisabled = "You have disabled alerts when %s has been defeated for today. You can change this in the Addon's options."
 L.AddonCompartmentTooltip1 = "|cff" .. ns.color .. "Left-Click:|r Check Timer"
 L.AddonCompartmentTooltip2 = "|cff" .. ns.color .. "Right-Click:|r Open Settings"
 L.OptionsTitle1 = "When do you want to be alerted?"
@@ -76,9 +77,14 @@ L.OptionsHow = {
 L.OptionsTitle3 = "Extra Options:"
 L.OptionsExtra = {
     [1] = {
+        key = "alwaysAlert",
+        name = "Always display alerts",
+        tooltip = "Always display alerts, even if you have already completed defeated " .. L.BeledarsSpawn .. " today.",
+    },
+    [2] = {
         key = "alwaysTrackQuest",
         name = "Always display defeat status",
-        tooltip = "Always display whether your character has killed Beledar's Spawn yet today, even if you have already collected the mount.",
+        tooltip = "Always display whether your character has killed " .. L.BeledarsSpawn .. " yet today, even if you have already collected the mount.",
     },
 }
 

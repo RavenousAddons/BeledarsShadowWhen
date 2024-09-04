@@ -61,18 +61,27 @@ local function Duration(duration)
     return string.format("%02d seconds", seconds)
 end
 
+local function MountLearned()
+    return select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
+end
+
+local function QuestCompleted()
+    return CQL.IsQuestFlaggedCompleted(ns.data.questID)
+end
+
 --- Prints a message about the current timer
 -- @param {string} message
 -- @param {boolean} raidWarning
 local function TimerPrint(message, raidWarningGate)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
-    if raidWarningGate and ns:GetOptionValue("raidwarning") then
-        RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
-    end
-    local mountLearned = select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
-    if not mountLearned or ns:GetOptionValue("alwaysTrackQuest") then
-        local defeatString = "|cff" .. (CQL.IsQuestFlaggedCompleted(ns.data.questID) and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
-        DEFAULT_CHAT_FRAME:AddMessage(L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r"))
+    if not QuestCompleted() or ns:GetOptionValue("alwaysAlert") then
+        if raidWarningGate and ns:GetOptionValue("raidwarning") then
+            RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
+        end
+        if not MountLearned() or ns:GetOptionValue("alwaysTrackQuest") then
+            local defeatString = "|cff" .. (QuestCompleted() and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
+            message = message .. "|n" .. L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
+        end
+        DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
     end
 end
 
@@ -153,6 +162,10 @@ end
 
 --- Checks the timer's state
 function ns:TimerCheck(forced)
+    if forced and QuestCompleted() and not ns:GetOptionValue("alwaysAlert") then
+        ns:PrettyPrint(L.QuestCompleteAlertDisabled:format(L.BeledarsSpawn))
+    end
+
     local now = GetServerTime()
     -- Counts down from 10799 to 0
     local seconds = (GetQuestResetTime() + 3660) % 10800

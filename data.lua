@@ -9,9 +9,10 @@ ns.data = {
         alert5Minutes =  true,
         alert10Minutes =  true,
         alert30Minutes =  true,
-        alwaysTrackQuest = false,
         sound = true,
         raidwarning = true,
+        alwaysAlert = true,
+        alwaysTrackQuest = false,
     },
     timers = {
         alert1Minute = 1,
