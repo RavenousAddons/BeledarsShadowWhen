@@ -36,7 +36,7 @@ AddonCompartmentFrame:RegisterAddon({
         if mouseButton == "RightButton" then
             ns:OpenSettings()
         end
-        ns:TimeCheck()
+        ns:TimerCheck(true)
     end,
     funcOnEnter = function(menuItem)
         GameTooltip:SetOwner(menuItem)

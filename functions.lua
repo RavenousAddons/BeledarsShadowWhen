@@ -77,7 +77,6 @@ local function TimerPrint(message, raidWarningGate)
 end
 
 local function SetTimers(seconds, startTime, endTime)
-    print("SetTimers " .. seconds)
     -- Fix end/start discrepancy
     if seconds < 1 then
         seconds = 10800
@@ -157,7 +156,6 @@ function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
     local seconds = (GetQuestResetTime() + 3660) % 10800
-    print("TimerCheck " .. seconds)
     local dateFormat = GetCVar("timeMgrUseMilitaryTime") == "1" and "%H:%M:%S" or "%I:%M:%S%p"
     local startTime = date(dateFormat, now + seconds)
     local endTime = date(dateFormat, seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
