@@ -163,7 +163,7 @@ end
 --- Checks the timer's state
 function ns:TimerCheck(forced)
     if forced and (QuestCompleted() or MountCollected()) and not ns:GetOptionValue("alwaysAlert") then
-        ns:PrettyPrint(L.AlwaysAlertDisabled:format(L.BeledarsSpawn))
+        ns:PrettyPrint(L.AlwaysAlertDisabled)
     end
 
     local now = GetServerTime()
