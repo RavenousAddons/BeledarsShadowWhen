@@ -61,7 +61,7 @@ local function Duration(duration)
     return string.format("%02d seconds", seconds)
 end
 
-local function MountLearned()
+local function MountCollected()
     return select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
 end
 
@@ -72,16 +72,19 @@ end
 --- Prints a message about the current timer
 -- @param {string} message
 -- @param {boolean} raidWarning
-local function TimerPrint(message, raidWarningGate)
-    if not QuestCompleted() or ns:GetOptionValue("alwaysAlert") then
+local function TimerPrint(message, sound, raidWarningGate)
+    if (not QuestCompleted() and not MountCollected()) or ns:GetOptionValue("alwaysAlert") then
         if raidWarningGate and ns:GetOptionValue("raidwarning") then
             RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
         end
-        if not MountLearned() or ns:GetOptionValue("alwaysTrackQuest") then
+        if not MountCollected() or ns:GetOptionValue("alwaysTrackQuest") then
             local defeatString = "|cff" .. (QuestCompleted() and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
             message = message .. "|n" .. L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
         end
         DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
+        if sound then
+            PlaySound(ns.data.sounds[sound])
+        end
     end
 end
 
@@ -98,8 +101,7 @@ local function SetTimers(seconds, startTime, endTime)
         CT.After(seconds - 9000, function()
             if ns:GetOptionValue("alertEnd") then
                 Toggle("recentlyOutput", ns.data.timeout)
-                TimerPrint(L.AlertEnd, true)
-                PlaySound(ns.data.sounds.future)
+                TimerPrint(L.AlertEnd, "future", true)
             end
         end)
     end
@@ -110,8 +112,7 @@ local function SetTimers(seconds, startTime, endTime)
             CT.After(seconds - (minutes * 60), function()
                 if ns:GetOptionValue(option) then
                     Toggle("recentlyOutput", ns.data.timeout)
-                    TimerPrint(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), true)
-                    PlaySound(ns.data.sounds.future)
+                    TimerPrint(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), "future", true)
                 end
             end)
         end
@@ -121,8 +122,7 @@ local function SetTimers(seconds, startTime, endTime)
     CT.After(seconds, function()
         Toggle("recentlyOutput", ns.data.timeout)
         if ns:GetOptionValue("alertStart") then
-            TimerPrint(L.AlertPresent:format(startTime, endTime), true)
-            PlaySound(ns.data.sounds.present)
+            TimerPrint(L.AlertPresent:format(startTime, endTime), "present", true)
         end
         -- And restart timers
         CT.After(3, function()
@@ -162,8 +162,8 @@ end
 
 --- Checks the timer's state
 function ns:TimerCheck(forced)
-    if forced and QuestCompleted() and not ns:GetOptionValue("alwaysAlert") then
-        ns:PrettyPrint(L.QuestCompleteAlertDisabled:format(L.BeledarsSpawn))
+    if forced and (QuestCompleted() or MountCollected()) and not ns:GetOptionValue("alwaysAlert") then
+        ns:PrettyPrint(L.AlwaysAlertDisabled:format(L.BeledarsSpawn))
     end
 
     local now = GetServerTime()
@@ -182,12 +182,10 @@ function ns:TimerCheck(forced)
         Toggle("recentlyOutput", ns.data.timeout)
         if seconds >= 9000 then
             -- Active now (10799 - 9000)
-            TimerPrint(L.AlertPresent:format(Duration(seconds - 9000), endTime), true)
-            PlaySound(ns.data.sounds.present)
+            TimerPrint(L.AlertPresent:format(Duration(seconds - 9000), endTime), "present", true)
         else
             -- Upcoming (8999 - 0)
-            TimerPrint(L.AlertFuture:format(Duration(seconds), startTime, endTime), true)
-            PlaySound(ns.data.sounds.future)
+            TimerPrint(L.AlertFuture:format(Duration(seconds), startTime, endTime), "future", true)
         end
     end
 

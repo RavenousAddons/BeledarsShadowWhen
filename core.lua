@@ -7,6 +7,7 @@ local CT = C_Timer
 
 function BeledarsShadowWhen_OnLoad(self)
     self:RegisterEvent("PLAYER_LOGIN")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 -- Event Triggers
@@ -22,6 +23,7 @@ function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
             -- Version-specific messages go here...
         end
         BSW_version = ns.version
+    elseif event == "PLAYER_ENTERING_WORLD" then
         ns:TimerCheck()
     end
 end
@@ -55,9 +57,6 @@ SlashCmdList["BELEDARSSHADOWWHEN"] = function(message)
     if message == "v" or message:match("ver") then
         -- Print the current addon version
         ns:PrettyPrint(L.Version:format(ns.version))
-    elseif message == "h" or message:match("help") then
-        -- Print ways to interact with addon
-        ns:PrettyPrint("\n" .. L.Help)
     elseif message == "c" or message:match("con") or message == "o" or message:match("opt") or message == "s" or message:match("sett") or message:match("togg") then
         -- Open settings window
         ns:OpenSettings()
