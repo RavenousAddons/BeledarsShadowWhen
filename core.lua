@@ -7,7 +7,6 @@ local CT = C_Timer
 
 function BeledarsShadowWhen_OnLoad(self)
     self:RegisterEvent("PLAYER_LOGIN")
-    self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 -- Event Triggers
@@ -23,7 +22,6 @@ function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
             -- Version-specific messages go here...
         end
         BSW_version = ns.version
-    elseif event == "PLAYER_ENTERING_WORLD" then
         ns:TimerCheck()
     end
 end
