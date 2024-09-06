@@ -72,7 +72,7 @@ end
 --- Prints a message about the current timer
 -- @param {string} message
 -- @param {boolean} raidWarning
-local function TimerPrint(message, sound, raidWarningGate)
+local function TimerAlert(message, sound, raidWarningGate)
     if (not QuestCompleted() and not MountCollected()) or ns:GetOptionValue("alwaysAlert") then
         if raidWarningGate and ns:GetOptionValue("raidwarning") then
             RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
@@ -101,7 +101,7 @@ local function SetTimers(seconds, startTime, endTime)
         CT.After(seconds - 9000, function()
             if ns:GetOptionValue("alertEnd") then
                 Toggle("recentlyOutput", ns.data.timeout)
-                TimerPrint(L.AlertEnd, "future", true)
+                TimerAlert(L.AlertEnd, "future", true)
             end
         end)
     end
@@ -112,7 +112,7 @@ local function SetTimers(seconds, startTime, endTime)
             CT.After(seconds - (minutes * 60), function()
                 if ns:GetOptionValue(option) then
                     Toggle("recentlyOutput", ns.data.timeout)
-                    TimerPrint(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), "future", true)
+                    TimerAlert(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), "future", true)
                 end
             end)
         end
@@ -122,7 +122,7 @@ local function SetTimers(seconds, startTime, endTime)
     CT.After(seconds, function()
         Toggle("recentlyOutput", ns.data.timeout)
         if ns:GetOptionValue("alertStart") then
-            TimerPrint(L.AlertPresent:format(startTime, endTime), "present", true)
+            TimerAlert(L.AlertPresent:format(startTime, endTime), "present", true)
         end
         -- And restart timers
         CT.After(3, function()
@@ -163,7 +163,7 @@ end
 --- Checks the timer's state
 function ns:TimerCheck(forced)
     if forced and (QuestCompleted() or MountCollected()) and not ns:GetOptionValue("alwaysAlert") then
-        ns:PrettyPrint(L.AlwaysAlertDisabled)
+        ns:PrettyPrint(L.AlwaysAlertDisabled:format(MountCollected() and L.AlwaysAlertDisabledCollected or L.AlwaysAlertDisabledDefeated))
     end
 
     local now = GetServerTime()
@@ -182,10 +182,10 @@ function ns:TimerCheck(forced)
         Toggle("recentlyOutput", ns.data.timeout)
         if seconds >= 9000 then
             -- Active now (10799 - 9000)
-            TimerPrint(L.AlertPresent:format(Duration(seconds - 9000), endTime), "present", true)
+            TimerAlert(L.AlertPresent:format(Duration(seconds - 9000), endTime), "present", true)
         else
             -- Upcoming (8999 - 0)
-            TimerPrint(L.AlertFuture:format(Duration(seconds), startTime, endTime), "future", true)
+            TimerAlert(L.AlertFuture:format(Duration(seconds), startTime, endTime), "future", true)
         end
     end
 
