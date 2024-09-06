@@ -22,7 +22,9 @@ L.AlertFuture = "starts in Hallowfall in %s from %s until %s."
 L.AlertPresent = "has started in Hallowfall and will last %s until %s!"
 L.AlertEnd = " has ended! 2h 30m until the next event."
 L.DefeatCheck = "%s %s %s today."
-L.AlwaysAlertDisabled = "You have disabled alerts when you have already defeated Beledar's Spawn today or collected the mount. You can change this (\"Always Display Alerts\") in the Addon's options."
+L.AlwaysAlertDisabled = "Alerts are disabled when you have %s. You can change this setting (\"Always Display Alerts\") in the Addon's options."
+L.AlwaysAlertDisabledCollected = "collected the " .. L.BeledarsSpawn .. " mount"
+L.AlwaysAlertDisabledDefeated = "already defeated " .. L.BeledarsSpawn .. " today"
 L.AddonCompartmentTooltip1 = "|cff" .. ns.color .. "Left-Click:|r Check Timer"
 L.AddonCompartmentTooltip2 = "|cff" .. ns.color .. "Right-Click:|r Open Settings"
 L.OptionsTitle1 = "When do you want to be alerted?"
@@ -82,7 +84,7 @@ L.OptionsExtra = {
     },
     [2] = {
         key = "alwaysTrackQuest",
-        name = "Always Show Rare Status",
+        name = "Always Include Rare Status",
         tooltip = "Always display whether your character has killed Beledar's Spawn yet today, even if you have already collected the mount.",
     },
 }
