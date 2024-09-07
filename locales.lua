@@ -11,10 +11,10 @@ end })
 -- Global
 L.Enabled = _G.VIDEO_OPTIONS_ENABLED
 L.Disabled = _G.VIDEO_OPTIONS_DISABLED
-L.BeledarsShadow = "Beledar's Shadow"
-L.BeledarsSpawn = "Beledar's Spawn"
 
 -- English
+L.BeledarsShadow = "Beledar's Shadow"
+L.BeledarsSpawn = "Beledar's Spawn"
 L.Version = "%s is the current version." -- ns.version
 L.Install = "Thanks for installing version |cff%1$s%2$s|r!" -- ns.color, ns.version
 L.Update = "Thanks for updating to version |cff%1$s%2$s|r!" -- ns.color, ns.version

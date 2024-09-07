@@ -14,7 +14,7 @@ local CQL = C_QuestLog
 --- Plays a sound if "sound" option in enabled
 -- @param {number} id
 local function PlaySound(id)
-    if ns:GetOptionValue("sound") then
+    if ns:OptionValue("sound") then
         PlaySoundFile(id)
     end
 end
@@ -73,11 +73,11 @@ end
 -- @param {string} message
 -- @param {boolean} raidWarning
 local function TimerAlert(message, sound, raidWarningGate)
-    if (not QuestCompleted() and not MountCollected()) or ns:GetOptionValue("alwaysAlert") then
-        if raidWarningGate and ns:GetOptionValue("raidwarning") then
+    if (not QuestCompleted() and not MountCollected()) or ns:OptionValue("alwaysAlert") then
+        if raidWarningGate and ns:OptionValue("raidwarning") then
             RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
         end
-        if not MountCollected() or ns:GetOptionValue("alwaysTrackQuest") then
+        if not MountCollected() or ns:OptionValue("alwaysTrackQuest") then
             local defeatString = "|cff" .. (QuestCompleted() and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
             message = message .. "|n" .. L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
         end
@@ -99,9 +99,9 @@ local function SetTimers(seconds, startTime, endTime)
     -- Set End Alert (30 mins after start)
     if seconds > 9000 then
         CT.After(seconds - 9000, function()
-            if ns:GetOptionValue("alertEnd") then
+            if ns:OptionValue("alertEnd") then
                 Toggle("recentlyOutput", ns.data.timeout)
-                TimerAlert(L.AlertEnd, "future", true)
+                TimerAlert(L.AlertEnd, "finish", true)
             end
         end)
     end
@@ -110,7 +110,7 @@ local function SetTimers(seconds, startTime, endTime)
     for option, minutes in pairs(ns.data.timers) do
         if seconds > (minutes * 60) then
             CT.After(seconds - (minutes * 60), function()
-                if ns:GetOptionValue(option) then
+                if ns:OptionValue(option) then
                     Toggle("recentlyOutput", ns.data.timeout)
                     TimerAlert(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), "future", true)
                 end
@@ -121,7 +121,7 @@ local function SetTimers(seconds, startTime, endTime)
     -- Set Start Alert (at end)
     CT.After(seconds, function()
         Toggle("recentlyOutput", ns.data.timeout)
-        if ns:GetOptionValue("alertStart") then
+        if ns:OptionValue("alertStart") then
             TimerAlert(L.AlertPresent:format(startTime, endTime), "present", true)
         end
         -- And restart timers
@@ -136,7 +136,7 @@ end
 ---
 
 --- Returns an option from the options table
-function ns:GetOptionValue(option)
+function ns:OptionValue(option)
     return BSW_options[ns.prefix .. option]
 end
 
@@ -162,7 +162,7 @@ end
 
 --- Checks the timer's state
 function ns:TimerCheck(forced)
-    if forced and (QuestCompleted() or MountCollected()) and not ns:GetOptionValue("alwaysAlert") then
+    if forced and (QuestCompleted() or MountCollected()) and not ns:OptionValue("alwaysAlert") then
         ns:PrettyPrint(L.AlwaysAlertDisabled:format(MountCollected() and L.AlwaysAlertDisabledCollected or L.AlwaysAlertDisabledDefeated))
     end
 

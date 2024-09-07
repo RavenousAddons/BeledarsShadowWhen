@@ -35,6 +35,7 @@ AddonCompartmentFrame:RegisterAddon({
         local mouseButton = menuInputData.buttonName
         if mouseButton == "RightButton" then
             ns:OpenSettings()
+            return
         end
         ns:TimerCheck(true)
     end,

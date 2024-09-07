@@ -11,7 +11,7 @@ ns.data = {
         alert30Minutes =  true,
         sound = true,
         raidwarning = true,
-        alwaysAlert = true,
+        alwaysAlert = false,
         alwaysTrackQuest = false,
     },
     timers = {
@@ -23,6 +23,7 @@ ns.data = {
     },
     timeout = 10,
     sounds = {
+        finish = 567436, -- alarmclockwarning1.ogg
         present = 567399, -- alarmclockwarning2.ogg
         future = 567458, -- alarmclockwarning3.ogg
     },
