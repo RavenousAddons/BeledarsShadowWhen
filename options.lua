@@ -5,9 +5,6 @@ local defaults = ns.data.defaults
 
 local function CreateCheckBox(category, variable, name, tooltip)
     local setting = Settings.RegisterAddOnSetting(category, ns.prefix .. variable, ns.prefix .. variable, BSW_options, type(defaults[variable]), name, defaults[variable])
-    Settings.SetOnValueChangedCallback(variable, function(event)
-        BSW_options[ns.prefix .. variable] = setting:GetValue()
-    end)
     Settings.CreateCheckbox(category, setting, tooltip)
 end
 
