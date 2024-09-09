@@ -7,6 +7,10 @@ local characterFormatted = "|cff" .. ns.data.classColors[className:lower()] .. U
 local CT = C_Timer
 local CQL = C_QuestLog
 
+local hour = L.Units.hour
+local minute = L.Units.minute
+local second = L.Units.second
+
 ---
 -- Local Functions
 ---
@@ -36,29 +40,46 @@ end
 -- @param {any} default
 local function RegisterDefaultOption(option, default)
     if BSW_options[ns.prefix .. option] == nil then
-        if BSW_options[option] ~= nil then
-            BSW_options[ns.prefix .. option] = BSW_options[option]
-            BSW_options[option] = nil
-        else
-            BSW_options[ns.prefix .. option] = default
-        end
+        BSW_options[ns.prefix .. option] = default
     end
 end
 
 --- Formats a duration in seconds to a "Xh Xm XXs" string
 -- @param {number} duration
+-- @param {boolean} long
 -- @return {string}
 local function Duration(duration)
+    local timeFormat = ns:OptionValue("timeFormat")
     local hours = math.floor(duration / 3600)
     local minutes = math.floor(math.fmod(duration, 3600) / 60)
     local seconds = math.fmod(duration, 60)
+    local h, m, s
+    if timeFormat == 3 then
+        h = " " .. (hours > 1 and hour.p or hour.s)
+        m = " " .. (minutes > 1 and minute.p or minute.s)
+        s = " " .. (seconds > 1 and second.p or second.s)
+    elseif timeFormat == 2 then
+        h = " " .. hour.a
+        m = " " .. minute.a
+        s = " " .. second.a
+    else
+        h = hour.t
+        m = minute.t
+        s = second.t
+    end
     if hours > 0 then
-        return string.format("%dh %dm", hours, minutes)
+        if minutes > 0 then
+            return string.format("%d" .. h .. " %d" .. m, hours, minutes)
+        end
+        return string.format("%d" .. h, hours)
     end
     if minutes > 0 then
-        return string.format("%dm %02ds", minutes, seconds)
+        if seconds > 0 then
+            return string.format("%d" .. m .. " %d" .. s, minutes, seconds)
+        end
+        return string.format("%d" .. m, minutes)
     end
-    return string.format("%02d seconds", seconds)
+    return string.format("%d" .. s, seconds)
 end
 
 local function MountCollected()
@@ -75,13 +96,15 @@ end
 local function TimerAlert(message, sound, raidWarningGate, forced)
     if forced or (not QuestCompleted() and not MountCollected()) or ns:OptionValue("alwaysAlert") then
         if raidWarningGate and ns:OptionValue("raidwarning") then
-            RaidNotice_AddMessage(RaidWarningFrame, L.BeledarsShadow .. " " .. message, ChatTypeInfo["RAID_WARNING"])
+            RaidNotice_AddMessage(RaidWarningFrame, "|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. message .. "|r", ChatTypeInfo["RAID_WARNING"])
         end
-        if not MountCollected() or ns:OptionValue("alwaysTrackQuest") then
-            local defeatString = "|cff" .. (QuestCompleted() and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
-            message = message .. "|n" .. L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
+        if ns:OptionValue("printText") then
+            if not MountCollected() or ns:OptionValue("alwaysTrackQuest") then
+                local defeatString = "|cff" .. (QuestCompleted() and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
+                message = message .. "|n" .. L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
+            end
+            print("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
         end
-        DEFAULT_CHAT_FRAME:AddMessage("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
         if sound then
             PlaySound(ns.data.sounds[sound])
         end
@@ -101,7 +124,7 @@ local function SetTimers(seconds, startTime, endTime)
         CT.After(seconds - 9000, function()
             if ns:OptionValue("alertEnd") then
                 Toggle("recentlyOutput", ns.data.timeouts.short)
-                TimerAlert(L.AlertEnd, "finish", true)
+                TimerAlert(L.AlertEnd:format(Duration(2.5 * 60 * 60)), "finish", true)
             end
         end)
     end
@@ -129,6 +152,22 @@ local function SetTimers(seconds, startTime, endTime)
             ns:TimerCheck()
         end)
     end)
+end
+
+--- Format a timestamp to a local time string
+-- @param {number} timestamp
+-- @return {string}
+local function TimeFormat(timestamp, includeSeconds)
+    local useMilitaryTime = GetCVar("timeMgrUseMilitaryTime") == "1"
+    local timeFormat = useMilitaryTime and ("%H:%M" .. (includeSeconds and ":%S" or "")) or ("%I:%M" .. (includeSeconds and ":%S" or "") .. "%p")
+    local time = date(timeFormat, timestamp)
+
+    -- Remove starting zero from non-military time
+    if not useMilitaryTime then
+        time = time:gsub("^0", ""):lower()
+    end
+
+    return time
 end
 
 ---
@@ -165,14 +204,8 @@ function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
     local seconds = (GetQuestResetTime() + 3601) % 10800
-    local dateFormat = GetCVar("timeMgrUseMilitaryTime") == "1" and "%H:%M:%S" or "%I:%M:%S%p"
-    local startTime = date(dateFormat, now + seconds)
-    local endTime = date(dateFormat, seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
-
-    if GetCVar("timeMgrUseMilitaryTime") == "0" then
-        startTime = startTime:gsub("^0", ""):lower()
-        endTime = endTime:gsub("^0", ""):lower()
-    end
+    local startTime = TimeFormat(now + seconds)
+    local endTime = TimeFormat(seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
 
     -- Warn user about no alerts when TimerCheck is forced and appropriate
     -- conditions are met

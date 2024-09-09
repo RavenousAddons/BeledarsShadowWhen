@@ -18,13 +18,33 @@ L.BeledarsSpawn = "Beledar's Spawn"
 L.Version = "%s is the current version." -- ns.version
 L.Install = "Thanks for installing version |cff%1$s%2$s|r!" -- ns.color, ns.version
 L.Update = "Thanks for updating to version |cff%1$s%2$s|r!" -- ns.color, ns.version
-L.AlertFuture = "starts in Hallowfall in %s from %s until %s."
-L.AlertPresent = "has started in Hallowfall and will last %s until %s!"
-L.AlertEnd = "has ended! 2h 30m until the next event."
+L.AlertFuture = "starts in Hallowfall in |cffffff00%s|r from |cffffff00%s|r until |cffffff00%s|r."
+L.AlertPresent = "has started in Hallowfall and will last |cffffff00%s|r until |cffffff00%s|r!"
+L.AlertEnd = "has ended! |cffffff00%s|r until the next event."
 L.DefeatCheck = "%s %s %s today."
 L.AlwaysAlertDisabled = "Alerts are disabled when you have %s. You can change this setting (\"Always Display Alerts\") in the Addon's options."
 L.AlwaysAlertDisabledCollected = "collected the " .. L.BeledarsSpawn .. " mount"
 L.AlwaysAlertDisabledDefeated = "already defeated " .. L.BeledarsSpawn .. " today"
+L.Units = {
+    hour = {
+        s = "hour",
+        p = "hours",
+        a = "hr.",
+        t = "h",
+    },
+    minute = {
+        s = "minute",
+        p = "minutes",
+        a = "min.",
+        t = "m",
+    },
+    second = {
+        s = "second",
+        p = "seconds",
+        a = "sec.",
+        t = "s",
+    },
+}
 L.AddonCompartmentTooltip1 = "|cff" .. ns.color .. "Left-Click:|r Check Timer"
 L.AddonCompartmentTooltip2 = "|cff" .. ns.color .. "Right-Click:|r Open Settings"
 L.OptionsTitle1 = "When do you want to be alerted?"
@@ -62,14 +82,19 @@ L.OptionsWhen = {
     },
 }
 L.OptionsTitle2 = "How do you want to be alerted?"
-L.OptionsHowTooltip = "When important alerts go off, they will be accompanied by a %s, in addition to the chat box alert."
+L.OptionsHowTooltip = "When alerts go off, they will be accompanied by %s, in addition to the chat box alert."
 L.OptionsHow = {
     [1] = {
-        key = "sound",
-        name = "Sounds",
-        tooltip = L.OptionsHowTooltip:format("Sound"),
+        key = "printText",
+        name = "Chat Messages",
+        tooltip = L.OptionsHowTooltip:format("chat message"),
     },
     [2] = {
+        key = "sound",
+        name = "Sounds",
+        tooltip = L.OptionsHowTooltip:format("sound"),
+    },
+    [3] = {
         key = "raidwarning",
         name = "Raid Warnings",
         tooltip = L.OptionsHowTooltip:format("Raid Warning"),
@@ -78,11 +103,23 @@ L.OptionsHow = {
 L.OptionsTitle3 = "Extra Options:"
 L.OptionsExtra = {
     [1] = {
+        key = "timeFormat",
+        name = "Time Format",
+        tooltip = "Choose a short or long time formatting.",
+        fn = function()
+            local container = Settings.CreateControlTextContainer()
+            container:Add(1, "12" .. L.Units.minute.t .. " 34" .. L.Units.second.t)
+            container:Add(2, "12 " .. L.Units.minute.a .. " 34 " .. L.Units.second.a)
+            container:Add(3, "12 " .. L.Units.minute.p .. " 34 " .. L.Units.second.p)
+            return container:GetData()
+        end,
+    },
+    [2] = {
         key = "alwaysAlert",
         name = "Always Display Alerts",
         tooltip = "Always display alerts, even if you have already defeated Beledar's Spawn today or collected the mount.",
     },
-    [2] = {
+    [3] = {
         key = "alwaysTrackQuest",
         name = "Always Include Rare Status",
         tooltip = "Always display whether your character has killed Beledar's Spawn yet today, even if you have already collected the mount.",
@@ -92,35 +129,5 @@ L.OptionsExtra = {
 -- Check locale and apply appropriate changes below
 local CURRENT_LOCALE = GetLocale()
 
--- German
-if CURRENT_LOCALE == "deDE" then return end
-
--- Spanish
-if CURRENT_LOCALE == "esES" then return end
-
--- Latin-American Spanish
-if CURRENT_LOCALE == "esMX" then return end
-
--- French
-if CURRENT_LOCALE == "frFR" then return end
-
--- Italian
-if CURRENT_LOCALE == "itIT" then return end
-
--- Brazilian Portuguese
-if CURRENT_LOCALE == "ptBR" then return end
-
--- Russian
-if CURRENT_LOCALE == "ruRU" then return end
-
--- Korean
-if CURRENT_LOCALE == "koKR" then return end
-
--- Simplified Chinese
-if CURRENT_LOCALE == "zhCN" then return end
-
--- Traditional Chinese
-if CURRENT_LOCALE == "zhTW" then return end
-
--- Swedish
-if CURRENT_LOCALE == "svSE" then return end
+-- XXXX
+-- if CURRENT_LOCALE == "xxXX" then return end
