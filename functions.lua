@@ -164,7 +164,7 @@ end
 function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
-    local seconds = (GetQuestResetTime() + 3660) % 10800
+    local seconds = (GetQuestResetTime() + 3601) % 10800
     local dateFormat = GetCVar("timeMgrUseMilitaryTime") == "1" and "%H:%M:%S" or "%I:%M:%S%p"
     local startTime = date(dateFormat, now + seconds)
     local endTime = date(dateFormat, seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
@@ -176,7 +176,7 @@ function ns:TimerCheck(forced)
 
     -- Warn user about no alerts when TimerCheck is forced and appropriate
     -- conditions are met
-    if forced and (QuestCompleted() or MountCollected()) and not ns:OptionValue("alwaysAlert") and not ns.data.toggles.noAlertsWarningSeen then
+    if forced and not ns:OptionValue("alwaysAlert") and not ns.data.toggles.noAlertsWarningSeen and (QuestCompleted() or MountCollected()) then
         Toggle("noAlertsWarningSeen", ns.data.timeouts.long)
         ns:PrettyPrint(L.AlwaysAlertDisabled:format(MountCollected() and L.AlwaysAlertDisabledCollected or L.AlwaysAlertDisabledDefeated))
     end
