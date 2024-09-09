@@ -21,13 +21,17 @@ ns.data = {
         alert10Minutes = 10,
         alert30Minutes = 30,
     },
-    timeout = 10,
+    timeouts = {
+        short = 10,
+        long = 300,
+    },
     sounds = {
         finish = 567436, -- alarmclockwarning1.ogg
         present = 567399, -- alarmclockwarning2.ogg
         future = 567458, -- alarmclockwarning3.ogg
     },
     toggles = {
+        noAlertsWarningSeen = false,
         recentlyOutput = false,
         timerActive = false,
     },

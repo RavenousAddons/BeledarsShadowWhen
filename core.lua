@@ -7,6 +7,7 @@ local CT = C_Timer
 
 function BeledarsShadowWhen_OnLoad(self)
     self:RegisterEvent("PLAYER_LOGIN")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 -- Event Triggers
@@ -14,6 +15,7 @@ end
 function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
     if event == "PLAYER_LOGIN" then
         ns:SetDefaultOptions()
+    elseif event == "PLAYER_ENTERING_WORLD" then
         ns:CreateSettingsPanel()
         if not BSW_version then
             ns:PrettyPrint(L.Install:format(ns.color, ns.version))
@@ -25,6 +27,7 @@ function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
         end
         BSW_version = ns.version
         ns:TimerCheck()
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 end
 
