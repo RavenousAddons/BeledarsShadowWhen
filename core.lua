@@ -14,6 +14,7 @@ end
 function BeledarsShadowWhen_OnEvent(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         local isInitialLogin, isReloadingUi = ...
+        ns:SetPlayerState()
         ns:SetDefaultOptions()
         ns:CreateSettingsPanel()
         if isInitialLogin then
@@ -23,7 +24,9 @@ function BeledarsShadowWhen_OnEvent(self, event, ...)
                 -- Version-specific messages go here...
             end
             BSW_version = ns.version
-            ns:TimerCheck()
+            if ns:OptionValue("alertOnLogin") then
+                ns:TimerCheck()
+            end
         end
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end

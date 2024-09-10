@@ -1,9 +1,6 @@
 local ADDON_NAME, ns = ...
 local L = ns.L
 
-local _, className, _ = UnitClass("player")
-local characterFormatted = "|cff" .. ns.data.classColors[className:lower()] .. UnitName("player") .. "-" .. GetNormalizedRealmName("player") .. "|r"
-
 local CT = C_Timer
 local CQL = C_QuestLog
 
@@ -101,7 +98,7 @@ local function TimerAlert(message, sound, raidWarningGate, forced)
         if ns:OptionValue("printText") then
             if not MountCollected() or ns:OptionValue("alwaysTrackQuest") then
                 local defeatString = "|cff" .. (QuestCompleted() and "ff4444has already defeated" or "44ff44has not defeated") .. "|r"
-                message = message .. "|n" .. L.DefeatCheck:format(characterFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
+                message = message .. "|n" .. L.DefeatCheck:format(ns.data.characterNameFormatted, defeatString, "|cff" .. ns.color .. L.BeledarsSpawn .. "|r")
             end
             print("|cff" .. ns.color .. L.BeledarsShadow .. "|r " .. message)
         end
@@ -173,6 +170,14 @@ end
 ---
 -- Namespaced Functions
 ---
+
+--- Set some data about the player
+function ns:SetPlayerState()
+    ns.data.characterName = UnitName("player") .. "-" .. GetNormalizedRealmName("player")
+    local _, className, _ = UnitClass("player")
+    ns.data.className = className
+    ns.data.characterNameFormatted = "|cff" .. ns.data.classColors[ns.data.className:lower()] .. ns.data.characterName .. "|r"
+end
 
 --- Returns an option from the options table
 function ns:OptionValue(option)

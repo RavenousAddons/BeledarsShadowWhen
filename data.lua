@@ -13,6 +13,7 @@ ns.data = {
         sound = true,
         raidwarning = true,
         timeFormat = 3,
+        alertOnLogin = true,
         alwaysAlert = false,
         alwaysTrackQuest = false,
     },

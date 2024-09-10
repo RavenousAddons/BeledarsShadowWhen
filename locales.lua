@@ -114,6 +114,11 @@ L.OptionsExtra = {
         end,
     },
     [2] = {
+        key = "alertOnLogin",
+        name = "Alert on login",
+        tooltip = "Fires an alert when you log in.",
+    },
+    [2] = {
         key = "alwaysAlert",
         name = "Always Display Alerts",
         tooltip = "Always display alerts, even if you have already defeated Beledar's Spawn today or collected the mount.",
