@@ -20,7 +20,6 @@ function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
         if not BSW_version then
             ns:PrettyPrint(L.Install:format(ns.color, ns.version))
         elseif BSW_version ~= ns.version then
-            ns:PrettyPrint(L.Update:format(ns.color, ns.version))
             -- Version-specific messages go here...
         end
         BSW_version = ns.version

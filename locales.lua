@@ -17,7 +17,6 @@ L.BeledarsShadow = "Beledar's Shadow"
 L.BeledarsSpawn = "Beledar's Spawn"
 L.Version = "%s is the current version." -- ns.version
 L.Install = "Thanks for installing version |cff%1$s%2$s|r!" -- ns.color, ns.version
-L.Update = "Thanks for updating to version |cff%1$s%2$s|r!" -- ns.color, ns.version
 L.AlertFuture = "starts in Hallowfall in |cffffff00%s|r from |cffffff00%s|r until |cffffff00%s|r."
 L.AlertPresent = "has started in Hallowfall and will last |cffffff00%s|r until |cffffff00%s|r!"
 L.AlertEnd = "has ended! |cffffff00%s|r until the next event."
