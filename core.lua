@@ -7,6 +7,7 @@ local CT = C_Timer
 
 function BeledarsShadowWhen_OnLoad(self)
     self:RegisterEvent("PLAYER_LOGIN")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 -- Event Triggers
@@ -15,16 +16,16 @@ function BeledarsShadowWhen_OnEvent(self, event, arg, ...)
     if event == "PLAYER_LOGIN" then
         ns:SetDefaultOptions()
         ns:CreateSettingsPanel()
+    elseif event == "PLAYER_ENTERING_WORLD" then
         if not BSW_version then
             ns:PrettyPrint(L.Install:format(ns.color, ns.version))
         elseif BSW_version ~= ns.version then
             ns:PrettyPrint(L.Update:format(ns.color, ns.version))
             -- Version-specific messages go here...
-            print("As a reminder, you can see the event timer at any time with this slash command:|n/bsw")
-            print("You can also configure your alerts via the in-game Addon Options menu or with this slash command:|n/bsw config")
         end
         BSW_version = ns.version
         ns:TimerCheck()
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 end
 
