@@ -2,7 +2,7 @@ local ADDON_NAME, ns = ...
 local L = ns.L
 
 local _, className, _ = UnitClass("player")
-local characterFormatted = "|cff" .. ns.data.classColors[className:lower()] .. UnitName("player") .. "-" .. GetRealmName("player") .. "|r"
+local characterFormatted = "|cff" .. ns.data.classColors[className:lower()] .. UnitName("player") .. "-" .. GetNormalizedRealmName("player") .. "|r"
 
 local CT = C_Timer
 local CQL = C_QuestLog
