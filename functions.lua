@@ -41,44 +41,6 @@ local function RegisterDefaultOption(option, default)
     end
 end
 
---- Formats a duration in seconds to a "Xh Xm XXs" string
--- @param {number} duration
--- @param {boolean} long
--- @return {string}
-local function Duration(duration)
-    local timeFormat = ns:OptionValue("timeFormat")
-    local hours = math.floor(duration / 3600)
-    local minutes = math.floor(math.fmod(duration, 3600) / 60)
-    local seconds = math.fmod(duration, 60)
-    local h, m, s
-    if timeFormat == 3 then
-        h = " " .. (hours > 1 and hour.p or hour.s)
-        m = " " .. (minutes > 1 and minute.p or minute.s)
-        s = " " .. (seconds > 1 and second.p or second.s)
-    elseif timeFormat == 2 then
-        h = " " .. hour.a
-        m = " " .. minute.a
-        s = " " .. second.a
-    else
-        h = hour.t
-        m = minute.t
-        s = second.t
-    end
-    if hours > 0 then
-        if minutes > 0 then
-            return string.format("%d" .. h .. " %d" .. m, hours, minutes)
-        end
-        return string.format("%d" .. h, hours)
-    end
-    if minutes > 0 then
-        if seconds > 0 then
-            return string.format("%d" .. m .. " %d" .. s, minutes, seconds)
-        end
-        return string.format("%d" .. m, minutes)
-    end
-    return string.format("%d" .. s, seconds)
-end
-
 local function MountCollected()
     return select(11, C_MountJournal.GetMountInfoByID(ns.data.mountID))
 end
@@ -121,7 +83,7 @@ local function SetTimers(seconds, startTime, endTime)
         CT.After(seconds - 9000, function()
             if ns:OptionValue("alertEnd") then
                 Toggle("recentlyOutput", ns.data.timeouts.short)
-                TimerAlert(L.AlertEnd:format(Duration(2.5 * 60 * 60)), "finish", true)
+                TimerAlert(L.AlertEnd:format(ns:Duration(2.5 * 60 * 60)), "finish", true)
             end
         end)
     end
@@ -132,7 +94,7 @@ local function SetTimers(seconds, startTime, endTime)
             CT.After(seconds - (minutes * 60), function()
                 if ns:OptionValue(option) then
                     Toggle("recentlyOutput", ns.data.timeouts.short)
-                    TimerAlert(L.AlertFuture:format(Duration(minutes * 60), startTime, endTime), "future", true)
+                    TimerAlert(L.AlertFuture:format(ns:Duration(minutes * 60), startTime, endTime), "future", true)
                 end
             end)
         end
@@ -204,11 +166,49 @@ function ns:OpenSettings()
     Settings.OpenToCategory(ns.Settings:GetID())
 end
 
+--- Formats a duration in seconds to a "Xh Xm XXs" string
+-- @param {number} duration
+-- @param {number} timeFormat
+-- @return {string}
+function ns:Duration(duration, timeFormat)
+    timeFormat = timeFormat and timeFormat or ns:OptionValue("timeFormat")
+    local hours = math.floor(duration / 3600)
+    local minutes = math.floor(math.fmod(duration, 3600) / 60)
+    local seconds = math.fmod(duration, 60)
+    local h, m, s
+    if timeFormat == 3 then
+        h = " " .. (hours > 1 and hour.p or hour.s)
+        m = " " .. (minutes > 1 and minute.p or minute.s)
+        s = " " .. (seconds > 1 and second.p or second.s)
+    elseif timeFormat == 2 then
+        h = " " .. hour.a
+        m = " " .. minute.a
+        s = " " .. second.a
+    else
+        h = hour.t
+        m = minute.t
+        s = second.t
+    end
+    if hours > 0 then
+        if minutes > 0 then
+            return string.format("%d" .. h .. ", %d" .. m, hours, minutes)
+        end
+        return string.format("%d" .. h, hours)
+    end
+    if minutes > 0 then
+        if seconds > 0 then
+            return string.format("%d" .. m .. ", %d" .. s, minutes, seconds)
+        end
+        return string.format("%d" .. m, minutes)
+    end
+    return string.format("%d" .. s, seconds)
+end
+
 --- Checks the timer's state
 function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
-    local seconds = (GetQuestResetTime() + 3601) % 10800
+    local seconds = (GetQuestResetTime() + 3661) % 10800
     local startTime = TimeFormat(now + seconds)
     local endTime = TimeFormat(seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
 
@@ -223,10 +223,10 @@ function ns:TimerCheck(forced)
         Toggle("recentlyOutput", ns.data.timeouts.short)
         if seconds >= 9000 then
             -- Active now (10799 - 9000)
-            TimerAlert(L.AlertPresent:format(Duration(seconds - 9000), endTime), "present", true, forced)
+            TimerAlert(L.AlertPresent:format(ns:Duration(seconds - 9000), endTime), "present", true, forced)
         else
             -- Upcoming (8999 - 0)
-            TimerAlert(L.AlertFuture:format(Duration(seconds), startTime, endTime), "future", true, forced)
+            TimerAlert(L.AlertFuture:format(ns:Duration(seconds), startTime, endTime), "future", true, forced)
         end
     end
 
