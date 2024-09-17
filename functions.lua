@@ -113,22 +113,6 @@ local function SetTimers(seconds, startTime, endTime)
     end)
 end
 
---- Format a timestamp to a local time string
--- @param {number} timestamp
--- @return {string}
-local function TimeFormat(timestamp, includeSeconds)
-    local useMilitaryTime = GetCVar("timeMgrUseMilitaryTime") == "1"
-    local timeFormat = useMilitaryTime and ("%H:%M" .. (includeSeconds and ":%S" or "")) or ("%I:%M" .. (includeSeconds and ":%S" or "") .. "%p")
-    local time = date(timeFormat, timestamp)
-
-    -- Remove starting zero from non-military time
-    if not useMilitaryTime then
-        time = time:gsub("^0", ""):lower()
-    end
-
-    return time
-end
-
 ---
 -- Namespaced Functions
 ---
@@ -204,13 +188,29 @@ function ns:Duration(duration, timeFormat)
     return string.format("%d" .. s, seconds)
 end
 
+--- Format a timestamp to a local time string
+-- @param {number} timestamp
+-- @return {string}
+function ns:TimeFormat(timestamp, includeSeconds)
+    local useMilitaryTime = GetCVar("timeMgrUseMilitaryTime") == "1"
+    local timeFormat = useMilitaryTime and ("%H:%M" .. (includeSeconds and ":%S" or "")) or ("%I:%M" .. (includeSeconds and ":%S" or "") .. "%p")
+    local time = date(timeFormat, timestamp)
+
+    -- Remove starting zero from non-military time
+    if not useMilitaryTime then
+        time = time:gsub("^0", ""):lower()
+    end
+
+    return time
+end
+
 --- Checks the timer's state
 function ns:TimerCheck(forced)
     local now = GetServerTime()
     -- Counts down from 10799 to 0
     local seconds = (GetQuestResetTime() + 3661) % 10800
-    local startTime = TimeFormat(now + seconds)
-    local endTime = TimeFormat(seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
+    local startTime = ns:TimeFormat(now + seconds)
+    local endTime = ns:TimeFormat(seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
 
     -- Warn user about no alerts when TimerCheck is forced and appropriate
     -- conditions are met

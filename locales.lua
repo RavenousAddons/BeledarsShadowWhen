@@ -15,10 +15,11 @@ L.Disabled = _G.VIDEO_OPTIONS_DISABLED
 -- English
 L.BeledarsShadow = "Beledar's Shadow"
 L.BeledarsSpawn = "Beledar's Spawn"
+L.Hallowfall = "Hallowfall"
 L.Version = "%s is the current version." -- ns.version
 L.Install = "Thanks for installing version |cff%1$s%2$s|r!" -- ns.color, ns.version
-L.AlertFuture = "starts in Hallowfall in |cffffff00%s|r from |cffffff00%s|r until |cffffff00%s|r."
-L.AlertPresent = "has started in Hallowfall and will last |cffffff00%s|r until |cffffff00%s|r!"
+L.AlertFuture = "starts in " .. L.Hallowfall .. " in |cffffff00%s|r from |cffffff00%s|r until |cffffff00%s|r."
+L.AlertPresent = "has started in " .. L.Hallowfall .. " and will last |cffffff00%s|r until |cffffff00%s|r!"
 L.AlertEnd = "has ended! |cffffff00%s|r until the next event."
 L.DefeatCheck = "%s %s %s today."
 L.AlwaysAlertDisabled = "Alerts are disabled when you have %s. You can change this setting (\"Always Display Alerts\") in the Addon's options."

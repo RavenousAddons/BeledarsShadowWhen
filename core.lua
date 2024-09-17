@@ -48,8 +48,21 @@ AddonCompartmentFrame:RegisterAddon({
         ns:TimerCheck(true)
     end,
     funcOnEnter = function(menuItem)
+        local now = GetServerTime()
+        -- Counts down from 10799 to 0
+        local seconds = (GetQuestResetTime() + 3661) % 10800
+        local startTime = ns:TimeFormat(now + seconds)
+        local endTime = ns:TimeFormat(seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
         GameTooltip:SetOwner(menuItem)
         GameTooltip:SetText(ns.name .. "        v" .. ns.version)
+        GameTooltip:AddLine(" ", 1, 1, 1, true)
+        if seconds >= 9000 then
+            -- Active now (10799 - 9000)
+            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertPresent:format(ns:Duration(seconds - 9000), endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
+        else
+            -- Upcoming (8999 - 0)
+            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertFuture:format(ns:Duration(seconds), startTime, endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
+        end
         GameTooltip:AddLine(" ", 1, 1, 1, true)
         GameTooltip:AddLine(L.AddonCompartmentTooltip1, 1, 1, 1, true)
         GameTooltip:AddLine(L.AddonCompartmentTooltip2, 1, 1, 1, true)
