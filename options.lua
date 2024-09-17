@@ -1,16 +1,32 @@
 local ADDON_NAME, ns = ...
 local L = ns.L
 
+local gameVersion = GetBuildInfo()
+
 local defaults = ns.data.defaults
 
-local function CreateCheckBox(category, variable, name, tooltip)
-    local setting = Settings.RegisterAddOnSetting(category, ns.prefix .. variable, ns.prefix .. variable, BSW_options, type(defaults[variable]), name, defaults[variable])
-    Settings.CreateCheckbox(category, setting, tooltip)
+local function CreateCheckBox(category, option)
+    local setting = Settings.RegisterAddOnSetting(category, ns.prefix .. option.key, ns.prefix .. option.key, BSW_options, type(defaults[option.key]), option.name, defaults[option.key])
+    setting.owner = ADDON_NAME
+    Settings.CreateCheckbox(category, setting, option.tooltip)
+    if option.new == ns.version then
+        if not NewSettings[gameVersion] then
+            NewSettings[gameVersion] = {}
+        end
+        table.insert(NewSettings[gameVersion], ns.prefix .. option.key)
+    end
 end
 
-local function CreateDropDown(category, variable, name, options, tooltip)
-    local setting = Settings.RegisterAddOnSetting(category, ns.prefix .. variable, ns.prefix .. variable, BSW_options, type(defaults[variable]), name, defaults[variable])
-    Settings.CreateDropdown(category, setting, options, tooltip)
+local function CreateDropDown(category, option)
+    local setting = Settings.RegisterAddOnSetting(category, ns.prefix .. option.key, ns.prefix .. option.key, BSW_options, type(defaults[option.key]), option.name, defaults[option.key])
+    setting.owner = ADDON_NAME
+    Settings.CreateDropdown(category, setting, option.fn, option.tooltip)
+    if option.new == ns.version then
+        if not NewSettings[gameVersion] then
+            NewSettings[gameVersion] = {}
+        end
+        table.insert(NewSettings[gameVersion], ns.prefix .. option.key)
+    end
 end
 
 function ns:CreateSettingsPanel()
@@ -22,9 +38,9 @@ function ns:CreateSettingsPanel()
     for index = 1, #L.OptionsWhen do
         local option = L.OptionsWhen[index]
         if option.fn then
-            CreateDropDown(category, option.key, option.name, option.fn, option.tooltip)
+            CreateDropDown(category, option)
         else
-            CreateCheckBox(category, option.key, option.name, option.tooltip)
+            CreateCheckBox(category, option)
         end
     end
 
@@ -33,9 +49,9 @@ function ns:CreateSettingsPanel()
     for index = 1, #L.OptionsHow do
         local option = L.OptionsHow[index]
         if option.fn then
-            CreateDropDown(category, option.key, option.name, option.fn, option.tooltip)
+            CreateDropDown(category, option)
         else
-            CreateCheckBox(category, option.key, option.name, option.tooltip)
+            CreateCheckBox(category, option)
         end
     end
 
@@ -44,9 +60,9 @@ function ns:CreateSettingsPanel()
     for index = 1, #L.OptionsExtra do
         local option = L.OptionsExtra[index]
         if option.fn then
-            CreateDropDown(category, option.key, option.name, option.fn, option.tooltip)
+            CreateDropDown(category, option)
         else
-            CreateCheckBox(category, option.key, option.name, option.tooltip)
+            CreateCheckBox(category, option)
         end
     end
 

@@ -109,7 +109,7 @@ L.OptionsExtra = {
         fn = function()
             local container = Settings.CreateControlTextContainer()
             for i = 1, 3, 1 do
-                container:Add(i, ns:Duration(754, i))
+                container:Add(i, ns:DurationFormat(754, i))
             end
             return container:GetData()
         end,
