@@ -38,6 +38,12 @@ ns.data = {
         recentlyOutput = false,
         timerActive = false,
     },
+    durations = {
+        frequency = 10800,
+        offset = 3660,
+        rollover = 9000,
+        halfhour = 1800,
+    },
     classColors = {
         deathknight = "c41e3a",
         demonhunter = "a330c9",

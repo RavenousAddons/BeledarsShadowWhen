@@ -17,6 +17,7 @@ function BeledarsShadowWhen_OnEvent(self, event, ...)
         ns:SetPlayerState()
         ns:SetDefaultOptions()
         ns:CreateSettingsPanel()
+        ns:BuildLibData()
         if isInitialLogin then
             if not BSW_version then
                 ns:PrettyPrint(L.Install:format(ns.color, ns.version))
@@ -27,7 +28,15 @@ function BeledarsShadowWhen_OnEvent(self, event, ...)
             if ns:OptionValue("alertOnLogin") then
                 ns:TimerCheck()
             end
+        else
+            local now = GetServerTime()
+            -- Counts down from 10799 to 0
+            local seconds = ns:GetSecondsUntilEvent()
+            local startTime = ns:TimeFormat(now + seconds)
+            local endTime = ns:TimeFormat(seconds < ns.data.durations.rollover and (now + seconds + ns.data.durations.halfhour) or (now + seconds - ns.data.durations.rollover))
+            ns:SetTimers(seconds, startTime, endTime)
         end
+        ns:SetDataBrokerText()
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 end
@@ -43,24 +52,24 @@ AddonCompartmentFrame:RegisterAddon({
         local mouseButton = menuInputData.buttonName
         if mouseButton == "RightButton" then
             ns:OpenSettings()
-            return
+        else
+            ns:TimerCheck(true)
         end
-        ns:TimerCheck(true)
     end,
     funcOnEnter = function(menuItem)
         local now = GetServerTime()
         -- Counts down from 10799 to 0
-        local seconds = (GetQuestResetTime() + 3661) % 10800
+        local seconds = ns:GetSecondsUntilEvent()
         local startTime = ns:TimeFormat(now + seconds)
-        local endTime = ns:TimeFormat(seconds < 9000 and (now + seconds + 1800) or (now + seconds - 9000))
+        local endTime = ns:TimeFormat(seconds < ns.data.durations.rollover and (now + seconds + ns.data.durations.halfhour) or (now + seconds - ns.data.durations.rollover))
         GameTooltip:SetOwner(menuItem)
         GameTooltip:SetText(ns.name .. "        v" .. ns.version)
         GameTooltip:AddLine(" ", 1, 1, 1, true)
-        if seconds >= 9000 then
-            -- Active now (10799 - 9000)
-            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertPresent:format(ns:DurationFormat(seconds - 9000), endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
+        if seconds >= ns.data.durations.rollover then
+            -- Active now (>= ns.data.durations.rollover)
+            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertPresent:format(ns:DurationFormat(seconds - ns.data.durations.rollover), endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
         else
-            -- Upcoming (8999 - 0)
+            -- Upcoming (< ns.data.durations.rollover)
             GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertFuture:format(ns:DurationFormat(seconds), startTime, endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
         end
         GameTooltip:AddLine(" ", 1, 1, 1, true)
