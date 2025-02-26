@@ -15,8 +15,8 @@ function BeledarsShadowWhen_OnEvent(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         local isInitialLogin, isReloadingUi = ...
         ns:SetPlayerState()
-        ns:SetDefaultOptions()
-        ns:CreateSettingsPanel()
+        ns:SetOptionDefaults()
+        ns:CreateSettingsPanel(BSW_options, ns.data.defaults, L.Settings, ns.name, ns.prefix, ns.version)
         ns:BuildLibData()
         if isInitialLogin then
             if not BSW_version then
@@ -25,7 +25,7 @@ function BeledarsShadowWhen_OnEvent(self, event, ...)
                 -- Version-specific messages go here...
             end
             BSW_version = ns.version
-            if ns:OptionValue("alertOnLogin") then
+            if ns:OptionValue(BSW_options, "alertOnLogin") then
                 ns:TimerCheck()
             end
         else
@@ -67,10 +67,10 @@ AddonCompartmentFrame:RegisterAddon({
         GameTooltip:AddLine(" ", 1, 1, 1, true)
         if seconds >= ns.data.durations.rollover then
             -- Active now (>= ns.data.durations.rollover)
-            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertPresent:format(ns:DurationFormat(seconds - ns.data.durations.rollover), endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
+            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertPresent:format(ns:DurationFormat(BSW_options, seconds - ns.data.durations.rollover), endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
         else
             -- Upcoming (< ns.data.durations.rollover)
-            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertFuture:format(ns:DurationFormat(seconds), startTime, endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
+            GameTooltip:AddLine("|cff" .. ns.color .. L.BeledarsShadow .. "|r |cffffffff" .. L.AlertFuture:format(ns:DurationFormat(BSW_options, seconds), startTime, endTime):gsub(L.Hallowfall .. " ", L.Hallowfall .. "|n") .. "|r", 1, 1, 1, true)
         end
         GameTooltip:AddLine(" ", 1, 1, 1, true)
         GameTooltip:AddLine(L.AddonCompartmentTooltip1, 1, 1, 1, true)

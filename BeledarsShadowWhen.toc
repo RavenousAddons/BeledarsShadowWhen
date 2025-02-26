@@ -1,11 +1,23 @@
-## Interface: 110005
-## Version: 1.1.0
+## Interface: 110100
+## Version: 1.1.1
 
 ## Name: Beledar's Shadow When?
 ## Title: Beledar's Shadow When?
 ## Notes: Keep track of when Beledar's Shadow begins in Hallowfall and whether you have defeated Beledar's Spawn today.|n|n|cffbbbbbbSlash command: /bsw|r
 ## Author: RavenousAddons
-## IconAtlas: UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare
+## IconAtlas: charactercreate-warlockpet-voidwalker
+
+## Category-enUS: Expansion Features
+## Category-deDE: Erweiterungsfeatures
+## Category-esES: Características
+## Category-esMX: Características de expansiones
+## Category-frFR: Contenu d’extension
+## Category-itIT: Contenuti specifici
+## Category-koKR: 확장팩 특징
+## Category-ptBR: Características da Expansão
+## Category-ruRU: Особый контент
+## Category-zhCN: 特色更新
+## Category-zhTW: 資料片特色
 
 ## SavedVariables: BSW_version
 ## SavedVariablesPerCharacter: BSW_options
@@ -14,4 +26,7 @@
 ## X-Website: https://github.com/RavenousAddons/BeledarsShadowWhen
 ## X-Curse-Project-ID: 1096658
 
+Libs/RavenousUtils/RavenousUtils.xml
+Libs/RavenousUtilsTemporal/RavenousUtilsTemporal.xml
+Libs/RavenousOptions/RavenousOptions.xml
 BeledarsShadowWhen.xml
